@@ -1,0 +1,7 @@
+[requires]
+boost/1.78.0
+jwt-cpp/0.7.0
+
+[generators]
+CMakeDeps
+CMakeToolchain
