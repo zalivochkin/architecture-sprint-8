@@ -45,8 +45,10 @@ bool validate_token(const std::string& token) {
                                     "/protocol/openid-connect/token/introspect";
 
     // Prepare data for introspection request
-    std::string post_data = "token=" + token + "&client_id=" + std::string(keycloak_client_id) +
-                            "&client_secret=" + std::string(keycloak_client_secret);
+    std::string post_data = "client_id=" + std::string(keycloak_client_id)
+            + "&client_secret=" + std::string(keycloak_client_secret)
+            + "&token=";
+    post_data += curl_easy_escape(curl, token.c_str(), 0);
 
     std::string response_data;
 
@@ -55,6 +57,8 @@ bool validate_token(const std::string& token) {
     curl_easy_setopt(curl, CURLOPT_POSTFIELDS, post_data.c_str());
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_callback);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response_data);
+    struct curl_slist* headers = curl_slist_append(NULL, "Host: localhost:8080");
+    curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
 
     // Perform the request
     CURLcode res = curl_easy_perform(curl);
